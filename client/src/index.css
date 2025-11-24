@@ -1,0 +1,1022 @@
+/* ============================================
+   Stop Motion Blog
+   Minimalism × LEGO Creativity × Stop-Motion Warmth
+   ============================================ */
+
+:root {
+  /* Neutral Base Palette */
+  --ivory: #fdfcfa;
+  --warm-white: #f7f5f2;
+  --soft-beige: #f0ede8;
+  --light-gray: #e5e3df;
+  --medium-gray: #c9c7c3;
+  --warm-gray: #a8a6a0;
+  --dark-gray: #5a5854;
+  --charcoal: #3a3835;
+
+  /* LEGO Accent Colors (Subtle) */
+  --lego-red: #d85140;
+  --lego-yellow: #f4b942;
+  --lego-blue: #5b95c9;
+  --lego-green: #6fa86f;
+
+  /* Semantic Colors */
+  --success: #7db87d;
+  --warning: #e8a567;
+  --error: #d86b5d;
+
+  /* Text Hierarchy */
+  --text-primary: #3a3835;
+  --text-secondary: #6b6863;
+  --text-muted: #9b9892;
+
+  /* Shadows - Natural Light */
+  --shadow-xs: 0 1px 3px rgba(58, 56, 53, 0.05);
+  --shadow-sm: 0 2px 8px rgba(58, 56, 53, 0.08);
+  --shadow-md: 0 4px 16px rgba(58, 56, 53, 0.1);
+  --shadow-lg: 0 8px 24px rgba(58, 56, 53, 0.12);
+  --shadow-hover: 0 6px 20px rgba(58, 56, 53, 0.14);
+
+  /* Border Radius */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Spacing Scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Animation Timing */
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 200ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+}
+
+/* ============================================
+   Reset & Base Styles
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Iansui', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--ivory);
+  color: var(--text-primary);
+  line-height: 1.7;
+  font-size: 16px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Subtle Paper Texture */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(217, 81, 64, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(91, 149, 201, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(244, 185, 66, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ============================================
+   Layout Structure
+   ============================================ */
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-xl);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: var(--space-2xl) var(--space-lg);
+  }
+}
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: var(--space-3xl);
+  align-items: start;
+}
+
+@media (max-width: 968px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-2xl);
+  }
+
+  .sidebar {
+    order: -1;
+  }
+}
+
+/* ============================================
+   Navigation - Refined & Clean
+   ============================================ */
+
+.nav {
+  background: rgba(253, 252, 250, 0.85);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid var(--light-gray);
+  padding: var(--space-lg) var(--space-3xl);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xl);
+}
+
+.nav-logo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  letter-spacing: -0.02em;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.nav-logo:hover {
+  opacity: 0.8;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.nav a:not(.nav-logo) {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  transition: all var(--duration-fast) var(--ease-out);
+  position: relative;
+  letter-spacing: -0.01em;
+}
+
+.nav a:not(.nav-logo):hover {
+  color: var(--text-primary);
+  background: var(--warm-white);
+}
+
+.nav a:not(.nav-logo)::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 18px;
+  right: 18px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--lego-red), var(--lego-yellow), var(--lego-blue));
+  opacity: 0;
+  transform: scaleX(0);
+  transition: all var(--duration-normal) var(--ease-out);
+  border-radius: var(--radius-full);
+}
+
+.nav a:not(.nav-logo):hover::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+@media (max-width: 768px) {
+  .nav {
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  .nav-inner {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* ============================================
+   Cards - Minimal Block Design
+   ============================================ */
+
+.card {
+  background: var(--warm-white);
+  border: 1px solid var(--light-gray);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-normal) var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--lego-red), var(--lego-yellow), var(--lego-blue));
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-out);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--medium-gray);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+/* ============================================
+   Buttons - Soft & Tactile
+   ============================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Iansui', sans-serif;
+  color: var(--ivory);
+  background: var(--charcoal);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+  box-shadow: var(--shadow-xs);
+  letter-spacing: -0.01em;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: var(--dark-gray);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-xs);
+}
+
+.btn-secondary {
+  background: var(--warm-white);
+  color: var(--text-primary);
+  border: 2px solid var(--light-gray);
+}
+
+.btn-secondary::before {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.btn-secondary:hover {
+  background: var(--soft-beige);
+  border-color: var(--medium-gray);
+}
+
+.btn-accent {
+  background: linear-gradient(135deg, var(--lego-red) 0%, var(--lego-yellow) 100%);
+  color: var(--ivory);
+}
+
+.btn-green {
+  background: var(--lego-green);
+}
+
+/* Small LEGO Stud Detail */
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity var(--duration-fast) ease;
+}
+
+.btn:hover::after {
+  opacity: 1;
+}
+
+/* ============================================
+   Form Elements - Natural & Clean
+   ============================================ */
+
+.form-row {
+  margin-bottom: var(--space-lg);
+}
+
+.form-row label {
+  display: block;
+  margin-bottom: var(--space-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+
+input:not([type="file"]),
+textarea,
+select {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 1rem;
+  font-family: 'Iansui', sans-serif;
+  color: var(--text-primary);
+  background: var(--ivory);
+  border: 2px solid var(--light-gray);
+  border-radius: var(--radius-md);
+  transition: all var(--duration-fast) var(--ease-out);
+  outline: none;
+}
+
+input:not([type="file"]):focus,
+textarea:focus,
+select:focus {
+  border-color: var(--lego-blue);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(91, 149, 201, 0.08);
+}
+
+textarea {
+  min-height: 140px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+input[type="file"] {
+  font-size: 0.95rem;
+  padding: 10px 0;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   Typography - Elegant Hierarchy
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-xl);
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-md);
+}
+
+p {
+  line-height: 1.8;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+  }
+}
+
+/* ============================================
+   Post Grid - Clean Layout
+   ============================================ */
+
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-xl);
+  margin-top: var(--space-xl);
+}
+
+@media (max-width: 768px) {
+  .posts-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+}
+
+.post-card {
+  background: var(--warm-white);
+  border: 1px solid var(--light-gray);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--duration-normal) var(--ease-out);
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  position: relative;
+}
+
+/* Subtle LEGO Stud Corner */
+.post-card::after {
+  content: '';
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 6px;
+  height: 6px;
+  background: var(--lego-red);
+  border-radius: 50%;
+  opacity: 0;
+  transition: all var(--duration-fast) ease;
+  box-shadow:
+    12px 0 0 var(--lego-yellow),
+    0 12px 0 var(--lego-blue);
+}
+
+.post-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--medium-gray);
+}
+
+.post-card:hover::after {
+  opacity: 0.6;
+}
+
+.post-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform var(--duration-slow) var(--ease-in-out);
+  display: block;
+}
+
+.post-card:hover img {
+  transform: scale(1.05);
+}
+
+.post-card-content {
+  padding: var(--space-lg);
+}
+
+.post-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-md);
+}
+
+.post-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: var(--space-md);
+  color: var(--text-primary);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.post-card .muted {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+  font-size: 0.85rem;
+}
+
+/* ============================================
+   Tags - Minimal Pills
+   ============================================ */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--warm-white);
+  border: 1px solid var(--light-gray);
+  border-radius: var(--radius-full);
+  margin: 0 8px 8px 0;
+  transition: all var(--duration-fast) var(--ease-out);
+  cursor: pointer;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+.tag::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  background: var(--lego-blue);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity var(--duration-fast) ease;
+}
+
+.tag:hover {
+  color: var(--text-primary);
+  background: var(--soft-beige);
+  border-color: var(--medium-gray);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xs);
+}
+
+.tag:hover::before {
+  opacity: 1;
+}
+
+/* ============================================
+   Sidebar - Refined Sections
+   ============================================ */
+
+.sidebar {
+  position: sticky;
+  top: 120px;
+}
+
+.sidebar-section {
+  background: var(--warm-white);
+  border: 1px solid var(--light-gray);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  box-shadow: var(--shadow-xs);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.sidebar-section:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar-section h3 {
+  font-size: 1.1rem;
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 2px solid var(--light-gray);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  position: relative;
+}
+
+/* Small LEGO Block Accent */
+.sidebar-section h3::before {
+  content: '';
+  width: 4px;
+  height: 18px;
+  background: linear-gradient(180deg, var(--lego-red), var(--lego-yellow));
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.sidebar-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--light-gray);
+  transition: padding-left var(--duration-fast) var(--ease-out);
+}
+
+.sidebar-item:last-child {
+  border-bottom: none;
+}
+
+.sidebar-item:hover {
+  padding-left: 8px;
+}
+
+.sidebar-item a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color var(--duration-fast) ease;
+  display: block;
+  line-height: 1.5;
+}
+
+.sidebar-item:hover a {
+  color: var(--lego-blue);
+}
+
+/* ============================================
+   View Counter & Share Buttons
+   ============================================ */
+
+.view-count {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 8px 16px;
+  background: var(--warm-white);
+  border: 1px solid var(--light-gray);
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.share-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.share-btn {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: 'Iansui', sans-serif;
+  color: var(--text-primary);
+  background: var(--warm-white);
+  border: 2px solid var(--light-gray);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.share-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.share-btn.facebook:hover {
+  background: #1877f2;
+  color: white;
+  border-color: #1877f2;
+}
+
+.share-btn.line:hover {
+  background: #06c755;
+  color: white;
+  border-color: #06c755;
+}
+
+/* ============================================
+   Toast Notifications - Gentle Feedback
+   ============================================ */
+
+.toast-container {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  align-items: center;
+}
+
+.toast {
+  background: var(--warm-white);
+  color: var(--text-primary);
+  padding: 18px 24px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--light-gray);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(20px);
+  min-width: 320px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: all;
+  animation: slideIn 0.4s var(--ease-out);
+  font-weight: 500;
+}
+
+.toast::before {
+  content: '✓';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--success);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.toast.error::before {
+  content: '✕';
+  background: var(--error);
+}
+
+.toast.error {
+  border-left: 4px solid var(--error);
+}
+
+.toast.success {
+  border-left: 4px solid var(--success);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .toast-container {
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+  }
+
+  .toast {
+    min-width: auto;
+  }
+}
+
+/* ============================================
+   Admin Panel - Professional Table
+   ============================================ */
+
+.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--light-gray);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.admin-table thead {
+  background: var(--soft-beige);
+}
+
+.admin-table th {
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--light-gray);
+}
+
+.admin-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--light-gray);
+  color: var(--text-secondary);
+}
+
+.admin-table tbody tr {
+  background: var(--warm-white);
+  transition: background var(--duration-fast) ease;
+}
+
+.admin-table tbody tr:hover {
+  background: var(--soft-beige);
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ============================================
+   Animations - Smooth & Natural
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pop-in {
+  animation: fadeIn 0.5s var(--ease-out);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--light-gray);
+  border-top-color: var(--lego-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+.text-center {
+  text-align: center;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gap-8 {
+  gap: var(--space-sm);
+}
+
+.gap-16 {
+  gap: var(--space-md);
+}
+
+.mb-16 {
+  margin-bottom: var(--space-md);
+}
+
+.mb-24 {
+  margin-bottom: var(--space-lg);
+}
+
+.mt-32 {
+  margin-top: var(--space-xl);
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+:focus-visible {
+  outline: 3px solid var(--lego-blue);
+  outline-offset: 3px;
+  border-radius: var(--radius-xs);
+}
+
+button:focus-visible {
+  outline-offset: 4px;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+
+@media print {
+  .nav,
+  .sidebar,
+  .share-buttons,
+  .btn,
+  .toast-container {
+    display: none;
+  }
+
+  body {
+    background: white;
+  }
+
+  body::before {
+    display: none;
+  }
+
+  .card,
+  .post-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    page-break-inside: avoid;
+  }
+}
