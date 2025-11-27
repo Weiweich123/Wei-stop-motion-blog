@@ -96,12 +96,37 @@ router.get('/google',
 );
 
 router.get('/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  (req, res) => {
-    // Set session userId for consistency with regular login
-    req.session.userId = req.user._id;
-    // Redirect to frontend
-    res.redirect(process.env.CLIENT_ORIGIN || 'http://localhost:3000');
+  (req, res, next) => {
+    passport.authenticate('google', (err, user, info) => {
+      if (err) {
+        console.error('Google OAuth error:', err);
+        return res.redirect((process.env.CLIENT_ORIGIN || 'http://localhost:3000') + '/login?error=oauth_error');
+      }
+      if (!user) {
+        console.error('Google OAuth: No user returned', info);
+        return res.redirect((process.env.CLIENT_ORIGIN || 'http://localhost:3000') + '/login?error=no_user');
+      }
+
+      // 手動登入用戶
+      req.logIn(user, (loginErr) => {
+        if (loginErr) {
+          console.error('Google OAuth login error:', loginErr);
+          return res.redirect((process.env.CLIENT_ORIGIN || 'http://localhost:3000') + '/login?error=login_error');
+        }
+
+        // Set session userId for consistency with regular login
+        req.session.userId = user._id;
+
+        // 儲存 session 後再重導向
+        req.session.save((saveErr) => {
+          if (saveErr) {
+            console.error('Session save error:', saveErr);
+          }
+          const redirectUrl = (process.env.CLIENT_ORIGIN || 'http://localhost:3000').replace(/\/$/, '');
+          res.redirect(redirectUrl);
+        });
+      });
+    })(req, res, next);
   }
 );
 
