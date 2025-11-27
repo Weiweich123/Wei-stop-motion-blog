@@ -19,11 +19,13 @@ passport.deserializeUser(async (id, done) => {
 const getCallbackURL = () => {
   // 優先使用手動設定的 SERVER_URL
   if (process.env.SERVER_URL) {
-    return `${process.env.SERVER_URL}/api/auth/google/callback`;
+    const baseUrl = process.env.SERVER_URL.replace(/\/$/, ''); // 移除結尾斜線
+    return `${baseUrl}/api/auth/google/callback`;
   }
   // 其次使用 CLIENT_ORIGIN（如果後端和前端同網域）
   if (process.env.NODE_ENV === 'production' && process.env.CLIENT_ORIGIN) {
-    return `${process.env.CLIENT_ORIGIN}/api/auth/google/callback`;
+    const baseUrl = process.env.CLIENT_ORIGIN.replace(/\/$/, ''); // 移除結尾斜線
+    return `${baseUrl}/api/auth/google/callback`;
   }
   // 本地開發
   return '/api/auth/google/callback';
