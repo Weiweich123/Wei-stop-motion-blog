@@ -134,7 +134,7 @@ router.post('/:id/comments', requireAuth, async (req, res) => {
 // Edit post (admin only)
 router.put('/:id', requireAdmin, upload.single('image'), async (req, res) => {
   try {
-    const { title, content, tags } = req.body;
+    const { title, content, tags, removeImage } = req.body;
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ ok: false, error: '文章不存在' });
 
@@ -149,7 +149,11 @@ router.put('/:id', requireAdmin, upload.single('image'), async (req, res) => {
     if (tags !== undefined) {
       post.tags = tags.split(/[,，﹐、]/).map(t => t.trim()).filter(Boolean);
     }
-    if (req.file) {
+
+    // 處理圖片：如果要刪除圖片，設為 null；如果有新圖片，更新
+    if (removeImage === 'true' || removeImage === true) {
+      post.image = null;
+    } else if (req.file) {
       post.image = `/uploads/${req.file.filename}`;
     }
 

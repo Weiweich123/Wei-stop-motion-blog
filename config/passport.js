@@ -15,10 +15,21 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
+// 動態設定 callback URL - production 環境使用完整 URL
+const getCallbackURL = () => {
+  if (process.env.NODE_ENV === 'production' && process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}/api/auth/google/callback`;
+  }
+  if (process.env.SERVER_URL) {
+    return `${process.env.SERVER_URL}/api/auth/google/callback`;
+  }
+  return '/api/auth/google/callback';
+};
+
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/api/auth/google/callback"
+    callbackURL: getCallbackURL()
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
