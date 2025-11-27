@@ -21,8 +21,15 @@ app.use(express.json());
 
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || 'http://localhost:3000',
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Trust proxy for Vercel
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'change_this_secret',
@@ -31,8 +38,8 @@ app.use(session({
   store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
   cookie: {
     httpOnly: true,
-    secure: false,
-    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 1000 * 60 * 60 * 24 // 1 day
   }
 }));
@@ -52,4 +59,9 @@ app.get('/', (req, res) => {
   res.json({ message: 'Stop Motion Blog API running' });
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// For Vercel serverless deployment
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+module.exports = app;
