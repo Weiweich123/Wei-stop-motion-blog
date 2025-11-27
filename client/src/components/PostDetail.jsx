@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { fetchJSON } from '../api'
+import { fetchJSON, API_BASE } from '../api'
 import { showToast } from './Toast'
 
 export default function PostDetail({ user }) {
@@ -35,7 +35,7 @@ export default function PostDetail({ user }) {
     ]
 
     if (postData.image) {
-      metaTags.push({ property: 'og:image', content: `http://localhost:5000${postData.image}` })
+      metaTags.push({ property: 'og:image', content: `${API_BASE}${postData.image}` })
     }
 
     metaTags.forEach(({ property, content }) => {

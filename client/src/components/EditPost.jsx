@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { fetchJSON } from '../api'
+import { fetchJSON, API_BASE } from '../api'
 import { showToast } from './Toast'
 
 export default function EditPost({ user }) {
@@ -80,7 +80,7 @@ export default function EditPost({ user }) {
         {currentImage && !removeImage && (
           <div style={{marginBottom: '12px'}}>
             <p style={{marginBottom: '8px'}}>目前的圖片:</p>
-            <img src={`http://localhost:5000${currentImage}`} alt="Current" style={{maxWidth: '200px', borderRadius: '8px', marginBottom: '8px', display: 'block'}} />
+            <img src={`${API_BASE}${currentImage}`} alt="Current" style={{maxWidth: '200px', borderRadius: '8px', marginBottom: '8px', display: 'block'}} />
             <button
               type="button"
               onClick={handleRemoveImage}
