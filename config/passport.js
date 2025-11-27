@@ -17,12 +17,15 @@ passport.deserializeUser(async (id, done) => {
 
 // 動態設定 callback URL - production 環境使用完整 URL
 const getCallbackURL = () => {
-  if (process.env.NODE_ENV === 'production' && process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}/api/auth/google/callback`;
-  }
+  // 優先使用手動設定的 SERVER_URL
   if (process.env.SERVER_URL) {
     return `${process.env.SERVER_URL}/api/auth/google/callback`;
   }
+  // 其次使用 CLIENT_ORIGIN（如果後端和前端同網域）
+  if (process.env.NODE_ENV === 'production' && process.env.CLIENT_ORIGIN) {
+    return `${process.env.CLIENT_ORIGIN}/api/auth/google/callback`;
+  }
+  // 本地開發
   return '/api/auth/google/callback';
 };
 
