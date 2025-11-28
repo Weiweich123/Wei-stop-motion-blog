@@ -23,6 +23,7 @@ export default function NavBar({ user, onUserChange }) {
         <Link to="/" className="nav-logo">🧱 CH峻瑋的停格動畫部落格</Link>
 
         <div className="nav-links">
+          <Link to="/discussions">討論區</Link>
           {user ? (
             <>
               <span style={{

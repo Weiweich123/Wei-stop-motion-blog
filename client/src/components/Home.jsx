@@ -14,9 +14,15 @@ function PostCard({ post }) {
             <p className="muted" style={{ margin: 0, fontSize: '0.85rem' }}>
               {post.author?.displayName || post.author?.username}
             </p>
-            <div className="view-count" style={{ fontSize: '0.8rem', padding: '4px 12px' }}>
-              <span>👁️</span>
-              <span>{post.views || 0}</span>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <div className="view-count" style={{ fontSize: '0.8rem', padding: '4px 12px' }}>
+                <span>👁️</span>
+                <span>{post.views || 0}</span>
+              </div>
+              <div className="view-count" style={{ fontSize: '0.8rem', padding: '4px 12px' }}>
+                <span>💬</span>
+                <span>{post.commentCount || 0}</span>
+              </div>
             </div>
           </div>
           {post.tags && post.tags.length > 0 && (

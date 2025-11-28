@@ -58,7 +58,7 @@ export default function AdminPanel({ user }) {
 
   return (
     <div className="container">
-      <h2 style={{ color: '#fff', textShadow: '2px 2px 4px rgba(0,0,0,0.3)', marginBottom: 20 }}>
+      <h2 style={{ color: 'var(--text-primary)', marginBottom: 20 }}>
         👑 管理員面板
       </h2>
 
@@ -71,7 +71,7 @@ export default function AdminPanel({ user }) {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid #e5e7eb' }}>
-                <th style={{ padding: 12, textAlign: 'left' }}>使用者名稱</th>
+                <th style={{ padding: 12, textAlign: 'left' }}>顯示名稱</th>
                 <th style={{ padding: 12, textAlign: 'left' }}>註冊時間</th>
                 <th style={{ padding: 12, textAlign: 'center' }}>身份</th>
                 <th style={{ padding: 12, textAlign: 'center' }}>操作</th>
@@ -81,7 +81,7 @@ export default function AdminPanel({ user }) {
               {users.map(u => (
                 <tr key={u._id} style={{ borderBottom: '1px solid #f3f4f6' }}>
                   <td style={{ padding: 12, fontWeight: u.isAdmin ? 'bold' : 'normal' }}>
-                    {u.username}
+                    {u.displayName || u.username}
                     {u._id === user.id && <span className="muted"> (你)</span>}
                   </td>
                   <td style={{ padding: 12 }} className="muted">

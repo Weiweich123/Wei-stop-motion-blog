@@ -34,7 +34,14 @@ async function requireAdmin(req, res, next) {
 router.get('/', async (req, res) => {
   try {
     const posts = await Post.find().populate('author', 'username displayName').sort({ createdAt: -1 });
-    res.json({ ok: true, posts });
+
+    // 取得每篇文章的留言數
+    const postsWithCommentCount = await Promise.all(posts.map(async (post) => {
+      const commentCount = await Comment.countDocuments({ post: post._id });
+      return { ...post.toObject(), commentCount };
+    }));
+
+    res.json({ ok: true, posts: postsWithCommentCount });
   } catch (err) {
     console.error(err);
     res.status(500).json({ ok: false, error: 'Server error' });
@@ -185,6 +192,56 @@ router.delete('/:id', requireAdmin, async (req, res) => {
     await Post.findByIdAndDelete(req.params.id);
 
     res.json({ ok: true, message: '文章已刪除!' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, error: 'Server error' });
+  }
+});
+
+// Edit comment
+router.put('/:postId/comments/:commentId', requireAuth, async (req, res) => {
+  try {
+    const { content } = req.body;
+    if (!content || !content.trim()) {
+      return res.status(400).json({ ok: false, error: '留言內容不能為空' });
+    }
+
+    const comment = await Comment.findById(req.params.commentId);
+    if (!comment) return res.status(404).json({ ok: false, error: '留言不存在' });
+
+    // 只有留言作者或管理員可以編輯
+    const user = await User.findById(req.session.userId);
+    if (comment.author.toString() !== req.session.userId && !user.isAdmin) {
+      return res.status(403).json({ ok: false, error: '無權編輯此留言' });
+    }
+
+    comment.content = content.trim();
+    comment.isEdited = true;
+    comment.updatedAt = new Date();
+    await comment.save();
+    await comment.populate('author', 'username displayName');
+
+    res.json({ ok: true, comment, message: '留言已更新!' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, error: 'Server error' });
+  }
+});
+
+// Delete comment
+router.delete('/:postId/comments/:commentId', requireAuth, async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.commentId);
+    if (!comment) return res.status(404).json({ ok: false, error: '留言不存在' });
+
+    // 只有留言作者或管理員可以刪除
+    const user = await User.findById(req.session.userId);
+    if (comment.author.toString() !== req.session.userId && !user.isAdmin) {
+      return res.status(403).json({ ok: false, error: '無權刪除此留言' });
+    }
+
+    await Comment.findByIdAndDelete(req.params.commentId);
+    res.json({ ok: true, message: '留言已刪除!' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ ok: false, error: 'Server error' });

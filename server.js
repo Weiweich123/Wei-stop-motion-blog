@@ -11,6 +11,7 @@ const connectDB = require('./utils/db');
 const authRouter = require('./routes/auth');
 const postsRouter = require('./routes/posts');
 const adminRouter = require('./routes/admin');
+const discussionsRouter = require('./routes/discussions');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -54,6 +55,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRouter);
 app.use('/api/posts', postsRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/discussions', discussionsRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Stop Motion Blog API running' });

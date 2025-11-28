@@ -1,69 +1,45 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { fetchJSON, API_BASE } from '../api'
+import { fetchJSON } from '../api'
 import { showToast } from './Toast'
 
-export default function PostDetail({ user }) {
+export default function DiscussionDetail({ user }) {
   const { id } = useParams()
   const nav = useNavigate()
-  const [post, setPost] = useState(null)
+  const [discussion, setDiscussion] = useState(null)
   const [comments, setComments] = useState([])
   const [commentContent, setCommentContent] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [editingCommentId, setEditingCommentId] = useState(null)
   const [editingContent, setEditingContent] = useState('')
+  const [isEditingDiscussion, setIsEditingDiscussion] = useState(false)
+  const [editTitle, setEditTitle] = useState('')
+  const [editDiscContent, setEditDiscContent] = useState('')
 
-  const loadPost = async () => {
-    const res = await fetchJSON(`/api/posts/${id}`)
+  const loadDiscussion = async () => {
+    const res = await fetchJSON(`/api/discussions/${id}`)
     if (res.ok) {
-      setPost(res.post)
-      // Update meta tags for FB sharing
-      updateMetaTags(res.post)
-    }
-    else {
+      setDiscussion(res.discussion)
+      setEditTitle(res.discussion.title)
+      setEditDiscContent(res.discussion.content)
+    } else {
       setError(true)
-      showToast('無法載入文章', 'error')
+      showToast('無法載入討論', 'error')
     }
-  }
-
-  const updateMetaTags = (postData) => {
-    // Update Open Graph meta tags for better FB sharing
-    const metaTags = [
-      { property: 'og:title', content: postData.title },
-      { property: 'og:description', content: postData.content.substring(0, 200) + '...' },
-      { property: 'og:type', content: 'article' },
-      { property: 'og:url', content: window.location.href },
-    ]
-
-    if (postData.image) {
-      metaTags.push({ property: 'og:image', content: `${API_BASE}${postData.image}` })
-    }
-
-    metaTags.forEach(({ property, content }) => {
-      let element = document.querySelector(`meta[property="${property}"]`)
-      if (!element) {
-        element = document.createElement('meta')
-        element.setAttribute('property', property)
-        document.head.appendChild(element)
-      }
-      element.setAttribute('content', content)
-    })
   }
 
   const loadComments = async () => {
-    const res = await fetchJSON(`/api/posts/${id}/comments`)
+    const res = await fetchJSON(`/api/discussions/${id}/comments`)
     if (res.ok) setComments(res.comments)
   }
 
   useEffect(() => {
     const loadData = async () => {
-      await loadPost()
+      await loadDiscussion()
       await loadComments()
       setLoading(false)
     }
-
-    // 只執行一次
     loadData()
   }, [id])
 
@@ -78,7 +54,7 @@ export default function PostDetail({ user }) {
       return
     }
 
-    const res = await fetchJSON(`/api/posts/${id}/comments`, {
+    const res = await fetchJSON(`/api/discussions/${id}/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: commentContent })
@@ -93,15 +69,31 @@ export default function PostDetail({ user }) {
     }
   }
 
-  const handleDelete = async () => {
-    if (!window.confirm('確定要刪除這篇文章嗎?')) return
+  const handleDeleteDiscussion = async () => {
+    if (!window.confirm('確定要刪除這篇討論嗎?')) return
 
-    const res = await fetchJSON(`/api/posts/${id}`, { method: 'DELETE' })
+    const res = await fetchJSON(`/api/discussions/${id}`, { method: 'DELETE' })
     if (res.ok) {
-      showToast(res.message || '文章已刪除！')
-      nav('/')
+      showToast(res.message || '討論已刪除！')
+      nav('/discussions')
     } else {
       showToast(res.error || '刪除失敗', 'error')
+    }
+  }
+
+  const handleSaveDiscussion = async () => {
+    const res = await fetchJSON(`/api/discussions/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: editTitle, content: editDiscContent })
+    })
+
+    if (res.ok) {
+      showToast(res.message || '討論已更新！')
+      setIsEditingDiscussion(false)
+      loadDiscussion()
+    } else {
+      showToast(res.error || '更新失敗', 'error')
     }
   }
 
@@ -121,7 +113,7 @@ export default function PostDetail({ user }) {
       return
     }
 
-    const res = await fetchJSON(`/api/posts/${id}/comments/${commentId}`, {
+    const res = await fetchJSON(`/api/discussions/${id}/comments/${commentId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: editingContent })
@@ -140,7 +132,7 @@ export default function PostDetail({ user }) {
   const handleDeleteComment = async (commentId) => {
     if (!window.confirm('確定要刪除這則留言嗎?')) return
 
-    const res = await fetchJSON(`/api/posts/${id}/comments/${commentId}`, { method: 'DELETE' })
+    const res = await fetchJSON(`/api/discussions/${id}/comments/${commentId}`, { method: 'DELETE' })
     if (res.ok) {
       showToast(res.message || '留言已刪除！')
       loadComments()
@@ -155,26 +147,17 @@ export default function PostDetail({ user }) {
     </div>
   )
 
-  if (error || !post) return (
+  if (error || !discussion) return (
     <div className="container">
-      <div className="card"><p>文章不存在</p></div>
+      <div className="card"><p>討論不存在</p></div>
     </div>
   )
 
-  const shareToFacebook = () => {
-    const url = encodeURIComponent(window.location.href)
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400')
-  }
-
-  const shareToLine = () => {
-    const url = encodeURIComponent(window.location.href)
-    const text = encodeURIComponent(post.title)
-    window.open(`https://social-plugins.line.me/lineit/share?url=${url}&text=${text}`, '_blank', 'width=600,height=400')
-  }
+  const canEdit = user && (user.id === discussion.author?._id || user.isAdmin)
 
   return (
     <div className="container">
-      <Link to="/" style={{
+      <Link to="/discussions" style={{
         color: '#2563eb',
         marginBottom: 16,
         display: 'inline-block',
@@ -184,92 +167,81 @@ export default function PostDetail({ user }) {
         fontWeight: 600,
         border: '1px solid #e2e8f0'
       }}>
-        ← 回到首頁
+        ← 回到討論區
       </Link>
 
       <div className="card pop-in" style={{ marginBottom: 24 }}>
-        {post.image && <img src={post.image} alt={post.title} style={{ width: '100%', maxHeight: 400, objectFit: 'cover', borderRadius: 8, marginBottom: 16, boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }} />}
-
-        <h1 style={{ marginTop: 0, marginBottom: 12 }}>{post.title}</h1>
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+        {isEditingDiscussion ? (
           <div>
-            <p className="muted" style={{ margin: 0, marginBottom: 4 }}>
-              作者：<strong>{post.author?.displayName || post.author?.username}</strong>
-            </p>
-            <p className="muted" style={{ margin: 0, fontSize: '0.85rem' }}>
-              {new Date(post.createdAt).toLocaleString()}
-            </p>
+            <input
+              value={editTitle}
+              onChange={e => setEditTitle(e.target.value)}
+              style={{ marginBottom: 12, fontSize: '1.5rem', fontWeight: 'bold' }}
+            />
+            <textarea
+              value={editDiscContent}
+              onChange={e => setEditDiscContent(e.target.value)}
+              rows={8}
+              style={{ marginBottom: 12 }}
+            />
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button className="btn" onClick={handleSaveDiscussion}>儲存</button>
+              <button className="btn btn-secondary" onClick={() => setIsEditingDiscussion(false)}>取消</button>
+            </div>
           </div>
-          <div className="view-count" style={{ fontSize: '1rem', padding: '6px 16px' }}>
-            <span>👁️</span>
-            <span>{post.views || 0} 次瀏覽</span>
-          </div>
-        </div>
+        ) : (
+          <>
+            <h1 style={{ marginTop: 0, marginBottom: 12 }}>
+              {discussion.title}
+              {discussion.isEdited && <span className="muted" style={{ fontSize: '0.75rem', marginLeft: 8 }}>(已編輯)</span>}
+            </h1>
 
-        {post.tags && post.tags.length > 0 && (
-          <div style={{ marginBottom: 16 }}>
-            {post.tags.map((tag, i) => (
-              <Link key={i} to={`/?tag=${encodeURIComponent(tag)}`} style={{ textDecoration: 'none' }}>
-                <span className="tag">
-                  #{tag}
-                </span>
-              </Link>
-            ))}
-          </div>
+            <div style={{ marginBottom: 16 }}>
+              <p className="muted" style={{ margin: 0, marginBottom: 4 }}>
+                發起者：<strong>{discussion.author?.displayName || discussion.author?.username}</strong>
+              </p>
+              <p className="muted" style={{ margin: 0, fontSize: '0.85rem' }}>
+                {new Date(discussion.createdAt).toLocaleString()}
+              </p>
+            </div>
+
+            <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.8, marginBottom: 24, fontSize: '1.05rem' }}>
+              {discussion.content}
+            </div>
+
+            {canEdit && (
+              <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 16, display: 'flex', gap: '8px' }}>
+                <button className="btn btn-secondary" onClick={() => setIsEditingDiscussion(true)}>
+                  ✏️ 編輯討論
+                </button>
+                <button className="btn" onClick={handleDeleteDiscussion} style={{ background: '#dc2626' }}>
+                  🗑️ 刪除討論
+                </button>
+              </div>
+            )}
+          </>
         )}
-
-        <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.8, marginBottom: 24, fontSize: '1.05rem' }}>
-          {post.content}
-        </div>
-
-        {user && user.isAdmin && (
-          <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 16, marginBottom: 16, display: 'flex', gap: '8px' }}>
-            <Link to={`/posts/${id}/edit`}>
-              <button className="btn btn-secondary">✏️ 編輯文章</button>
-            </Link>
-            <button className="btn" onClick={handleDelete} style={{ background: '#dc2626' }}>
-              🗑️ 刪除文章
-            </button>
-          </div>
-        )}
-
-        <div style={{ borderTop: '2px solid #f3f4f6', paddingTop: 16 }}>
-          <p style={{ marginBottom: 12, fontWeight: 600 }}>
-            📤 分享這篇文章：
-          </p>
-          <div className="share-buttons">
-            <button onClick={shareToFacebook} className="share-btn facebook">
-              <span style={{ fontSize: '1.2rem' }}>📘</span>
-              <span>分享到 Facebook</span>
-            </button>
-            <button onClick={shareToLine} className="share-btn line">
-              <span style={{ fontSize: '1.2rem' }}>💬</span>
-              <span>分享到 LINE</span>
-            </button>
-          </div>
-        </div>
       </div>
 
       <h3 style={{ marginBottom: 16 }}>
-        💬 留言區 ({comments.length})
+        💬 回覆 ({comments.length})
       </h3>
 
       {user ? (
         <form onSubmit={submitComment} className="card" style={{ marginBottom: 24 }}>
           <textarea
-            placeholder="寫下你的留言..."
+            placeholder="寫下你的回覆..."
             rows={3}
             value={commentContent}
             onChange={e => setCommentContent(e.target.value)}
             style={{ marginBottom: 8 }}
           />
-          <button className="btn">送出留言</button>
+          <button className="btn">送出回覆</button>
         </form>
       ) : (
         <div className="card" style={{ marginBottom: 24 }}>
           <p className="muted">
-            請先<Link to="/login" style={{ color: '#2563eb', marginLeft: 4, marginRight: 4 }}>登入</Link>才能留言
+            請先<Link to="/login" style={{ color: '#2563eb', marginLeft: 4, marginRight: 4 }}>登入</Link>才能回覆
           </p>
         </div>
       )}
@@ -277,7 +249,7 @@ export default function PostDetail({ user }) {
       <div>
         {comments.length === 0 ? (
           <div className="card">
-            <p className="muted">還沒有留言，成為第一個留言的人吧！✨</p>
+            <p className="muted">還沒有回覆，成為第一個回覆的人吧！✨</p>
           </div>
         ) : (
           comments.map(comment => (

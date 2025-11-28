@@ -9,6 +9,9 @@ import CreatePost from './components/CreatePost'
 import EditPost from './components/EditPost'
 import PostDetail from './components/PostDetail'
 import AdminPanel from './components/AdminPanel'
+import Discussions from './components/Discussions'
+import CreateDiscussion from './components/CreateDiscussion'
+import DiscussionDetail from './components/DiscussionDetail'
 import Toast from './components/Toast'
 import { fetchJSON } from './api'
 
@@ -37,6 +40,9 @@ export default function App() {
           <Route path="/profile" element={<Profile user={user} onUserUpdate={setUser} />} />
           <Route path="/create" element={<CreatePost user={user} />} />
           <Route path="/admin" element={<AdminPanel user={user} />} />
+          <Route path="/discussions" element={<Discussions user={user} />} />
+          <Route path="/discussions/new" element={<CreateDiscussion user={user} />} />
+          <Route path="/discussions/:id" element={<DiscussionDetail user={user} />} />
         </Routes>
       </div>
     </div>
