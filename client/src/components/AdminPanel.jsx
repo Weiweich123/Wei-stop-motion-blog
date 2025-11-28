@@ -49,8 +49,9 @@ export default function AdminPanel({ user }) {
   if (loading) {
     return (
       <div className="container">
-        <div className="card">
-          <p>載入中...</p>
+        <div className="card" style={{ textAlign: 'center', padding: '48px 24px' }}>
+          <div className="loading-spinner"></div>
+          <p className="muted" style={{ marginTop: 16 }}>載入管理面板中...</p>
         </div>
       </div>
     )

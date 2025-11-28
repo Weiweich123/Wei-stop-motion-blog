@@ -67,8 +67,9 @@ export default function Discussions({ user }) {
       )}
 
       {loading ? (
-        <div className="card">
-          <p>載入中...</p>
+        <div className="card" style={{ textAlign: 'center', padding: '48px 24px' }}>
+          <div className="loading-spinner"></div>
+          <p className="muted" style={{ marginTop: 16 }}>載入討論中...</p>
         </div>
       ) : discussions.length === 0 ? (
         <div className="card">

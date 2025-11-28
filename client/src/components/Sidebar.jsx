@@ -5,6 +5,8 @@ import { fetchJSON } from '../api'
 export default function Sidebar() {
   const [popularPosts, setPopularPosts] = useState([])
   const [allTags, setAllTags] = useState([])
+  const [loadingPosts, setLoadingPosts] = useState(true)
+  const [loadingTags, setLoadingTags] = useState(true)
 
   useEffect(() => {
     loadPopularPosts()
@@ -14,6 +16,7 @@ export default function Sidebar() {
   const loadPopularPosts = async () => {
     const res = await fetchJSON('/api/posts/popular/top?limit=5')
     if (res.ok) setPopularPosts(res.posts)
+    setLoadingPosts(false)
   }
 
   const loadTags = async () => {
@@ -25,6 +28,7 @@ export default function Sidebar() {
       })
       setAllTags(Array.from(tags))
     }
+    setLoadingTags(false)
   }
 
   return (
@@ -34,7 +38,9 @@ export default function Sidebar() {
         <h3>
           <span>🔥</span> 熱門文章
         </h3>
-        {popularPosts.length === 0 ? (
+        {loadingPosts ? (
+          <p className="muted">載入中...</p>
+        ) : popularPosts.length === 0 ? (
           <p className="muted">尚無熱門文章</p>
         ) : (
           <div>
@@ -101,7 +107,9 @@ export default function Sidebar() {
         <h3>
           <span>🎨</span> 主題
         </h3>
-        {allTags.length === 0 ? (
+        {loadingTags ? (
+          <p className="muted">載入中...</p>
+        ) : allTags.length === 0 ? (
           <p className="muted">尚無主題</p>
         ) : (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
