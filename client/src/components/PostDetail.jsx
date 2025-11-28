@@ -3,6 +3,30 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { fetchJSON, API_BASE } from '../api'
 import { showToast } from './Toast'
 
+// 將文字中的 URL 轉換成可點擊的連結
+function linkifyContent(text) {
+  const urlRegex = /(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g
+  const parts = text.split(urlRegex)
+
+  return parts.map((part, index) => {
+    if (part.match(urlRegex)) {
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'var(--lego-blue)', wordBreak: 'break-all' }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {part}
+        </a>
+      )
+    }
+    return part
+  })
+}
+
 export default function PostDetail({ user }) {
   const { id } = useParams()
   const nav = useNavigate()
@@ -220,7 +244,7 @@ export default function PostDetail({ user }) {
         )}
 
         <div style={{ whiteSpace: 'pre-wrap', lineHeight: 1.8, marginBottom: 24, fontSize: '1.05rem' }}>
-          {post.content}
+          {linkifyContent(post.content)}
         </div>
 
         {user && user.isAdmin && (
@@ -342,7 +366,7 @@ export default function PostDetail({ user }) {
                   </div>
                 </div>
               ) : (
-                <p style={{ margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{comment.content}</p>
+                <p style={{ margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{linkifyContent(comment.content)}</p>
               )}
             </div>
           ))
