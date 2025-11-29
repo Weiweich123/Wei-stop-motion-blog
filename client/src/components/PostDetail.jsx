@@ -323,7 +323,7 @@ export default function PostDetail({ user }) {
                 </div>
                 {user && editingCommentId !== comment._id && (
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    {user._id === comment.author?._id && (
+                    {String(user._id) === String(comment.author?._id) && (
                       <button
                         onClick={() => handleEditComment(comment)}
                         style={{
@@ -337,7 +337,7 @@ export default function PostDetail({ user }) {
                         ✏️ 編輯
                       </button>
                     )}
-                    {(user._id === comment.author?._id || user.isAdmin) && (
+                    {(String(user._id) === String(comment.author?._id) || user.isAdmin) && (
                       <button
                         onClick={() => handleDeleteComment(comment._id)}
                         style={{

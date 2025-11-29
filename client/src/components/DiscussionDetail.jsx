@@ -180,7 +180,7 @@ export default function DiscussionDetail({ user }) {
     </div>
   )
 
-  const canEdit = user && (user._id === discussion.author?._id || user.isAdmin)
+  const canEdit = user && (String(user._id) === String(discussion.author?._id) || user.isAdmin)
 
   return (
     <div className="container">
@@ -295,7 +295,7 @@ export default function DiscussionDetail({ user }) {
                 </div>
                 {user && editingCommentId !== comment._id && (
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    {user._id === comment.author?._id && (
+                    {String(user._id) === String(comment.author?._id) && (
                       <button
                         onClick={() => handleEditComment(comment)}
                         style={{
@@ -309,7 +309,7 @@ export default function DiscussionDetail({ user }) {
                         ✏️ 編輯
                       </button>
                     )}
-                    {(user._id === comment.author?._id || user.isAdmin) && (
+                    {(String(user._id) === String(comment.author?._id) || user.isAdmin) && (
                       <button
                         onClick={() => handleDeleteComment(comment._id)}
                         style={{
