@@ -321,7 +321,7 @@ export default function PostDetail({ user }) {
                     </span>
                   )}
                 </div>
-                {user && (user.id === comment.author?._id || user.isAdmin) && editingCommentId !== comment._id && (
+                {user && (user._id === comment.author?._id || user.isAdmin) && editingCommentId !== comment._id && (
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button
                       onClick={() => handleEditComment(comment)}

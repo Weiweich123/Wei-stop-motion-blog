@@ -83,7 +83,7 @@ export default function AdminPanel({ user }) {
                 <tr key={u._id} style={{ borderBottom: '1px solid #f3f4f6' }}>
                   <td style={{ padding: 12, fontWeight: u.isAdmin ? 'bold' : 'normal' }}>
                     {u.displayName || u.username}
-                    {u._id === user.id && <span className="muted"> (你)</span>}
+                    {u._id === user._id && <span className="muted"> (你)</span>}
                   </td>
                   <td style={{ padding: 12 }} className="muted">
                     {new Date(u.createdAt).toLocaleDateString()}
@@ -114,7 +114,7 @@ export default function AdminPanel({ user }) {
                     )}
                   </td>
                   <td style={{ padding: 12, textAlign: 'center' }}>
-                    {u._id === user.id ? (
+                    {u._id === user._id ? (
                       <span className="muted">—</span>
                     ) : (
                       <button

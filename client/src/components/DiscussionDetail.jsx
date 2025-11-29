@@ -180,7 +180,7 @@ export default function DiscussionDetail({ user }) {
     </div>
   )
 
-  const canEdit = user && (user.id === discussion.author?._id || user.isAdmin)
+  const canEdit = user && (user._id === discussion.author?._id || user.isAdmin)
 
   return (
     <div className="container">
@@ -293,7 +293,7 @@ export default function DiscussionDetail({ user }) {
                     </span>
                   )}
                 </div>
-                {user && (user.id === comment.author?._id || user.isAdmin) && editingCommentId !== comment._id && (
+                {user && (user._id === comment.author?._id || user.isAdmin) && editingCommentId !== comment._id && (
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button
                       onClick={() => handleEditComment(comment)}
