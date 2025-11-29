@@ -293,32 +293,36 @@ export default function DiscussionDetail({ user }) {
                     </span>
                   )}
                 </div>
-                {user && (user._id === comment.author?._id || user.isAdmin) && editingCommentId !== comment._id && (
+                {user && editingCommentId !== comment._id && (
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      onClick={() => handleEditComment(comment)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontSize: '0.85rem',
-                        color: 'var(--lego-blue)'
-                      }}
-                    >
-                      ✏️ 編輯
-                    </button>
-                    <button
-                      onClick={() => handleDeleteComment(comment._id)}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontSize: '0.85rem',
-                        color: 'var(--lego-red)'
-                      }}
-                    >
-                      🗑️ 刪除
-                    </button>
+                    {user._id === comment.author?._id && (
+                      <button
+                        onClick={() => handleEditComment(comment)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '0.85rem',
+                          color: 'var(--lego-blue)'
+                        }}
+                      >
+                        ✏️ 編輯
+                      </button>
+                    )}
+                    {(user._id === comment.author?._id || user.isAdmin) && (
+                      <button
+                        onClick={() => handleDeleteComment(comment._id)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontSize: '0.85rem',
+                          color: 'var(--lego-red)'
+                        }}
+                      >
+                        🗑️ 刪除
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

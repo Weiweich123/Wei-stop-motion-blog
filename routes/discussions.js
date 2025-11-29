@@ -178,10 +178,9 @@ router.put('/:discId/comments/:commentId', requireAuth, async (req, res) => {
       return res.status(404).json({ ok: false, error: '留言不存在' });
     }
 
-    // 只有留言作者或管理員可以編輯
-    const user = await User.findById(req.session.userId);
-    if (comment.author.toString() !== req.session.userId && !user.isAdmin) {
-      return res.status(403).json({ ok: false, error: '無權編輯此留言' });
+    // 只有留言作者可以編輯（管理員也不能編輯別人的留言）
+    if (comment.author.toString() !== req.session.userId) {
+      return res.status(403).json({ ok: false, error: '只有留言作者可以編輯' });
     }
 
     comment.content = content.trim();
