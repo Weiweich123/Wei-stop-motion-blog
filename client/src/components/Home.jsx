@@ -57,21 +57,27 @@ export default function Home(){
   const [searchParams] = useSearchParams()
   const tagFromUrl = searchParams.get('tag')
 
+  // 載入所有文章（只在首次載入時執行）
   const load = async ()=>{
     setLoading(true)
     const res = await fetchJSON('/api/posts')
     if(res.ok) {
       setPosts(res.posts)
-      if (tagFromUrl) {
-        setFilteredPosts(res.posts.filter(post => post.tags && post.tags.includes(tagFromUrl)))
-      } else {
-        setFilteredPosts(res.posts)
-      }
     }
     setLoading(false)
   }
 
-  useEffect(()=>{ load() }, [tagFromUrl])
+  // 首次載入
+  useEffect(()=>{ load() }, [])
+
+  // 當標籤改變或文章載入完成時，過濾文章
+  useEffect(() => {
+    if (tagFromUrl) {
+      setFilteredPosts(posts.filter(post => post.tags && post.tags.includes(tagFromUrl)))
+    } else {
+      setFilteredPosts(posts)
+    }
+  }, [tagFromUrl, posts])
 
   return (
     <div className="main-layout">
