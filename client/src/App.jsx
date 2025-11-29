@@ -17,11 +17,13 @@ import { fetchJSON } from './api'
 
 export default function App() {
   const [user, setUser] = useState(null)
+  const [authLoading, setAuthLoading] = useState(true)
 
   const loadProfile = async () => {
     const res = await fetchJSON('/api/auth/profile', { method: 'GET' })
     if (res.ok) setUser(res.user)
     else setUser(null)
+    setAuthLoading(false)
   }
 
   useEffect(() => { loadProfile() }, [])
@@ -29,7 +31,7 @@ export default function App() {
   return (
     <div>
       <Toast />
-      <NavBar user={user} onUserChange={setUser} />
+      <NavBar user={user} authLoading={authLoading} onUserChange={setUser} />
       <div className="container">
         <Routes>
           <Route path="/" element={<Home />} />

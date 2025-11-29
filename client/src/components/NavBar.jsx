@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { fetchJSON } from '../api'
 import { showToast } from './Toast'
 
-export default function NavBar({ user, onUserChange }) {
+export default function NavBar({ user, authLoading, onUserChange }) {
   const nav = useNavigate()
 
   const logout = async () => {
@@ -24,7 +24,9 @@ export default function NavBar({ user, onUserChange }) {
 
         <div className="nav-links">
           <Link to="/discussions">討論區</Link>
-          {user ? (
+          {authLoading ? (
+            <span className="muted" style={{ fontSize: '0.9rem' }}>載入中...</span>
+          ) : user ? (
             <>
               <span style={{
                 color: 'var(--text-primary)',
