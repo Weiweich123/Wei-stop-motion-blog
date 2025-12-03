@@ -250,6 +250,20 @@ router.put('/:postId/comments/:commentId', requireAuth, async (req, res) => {
   }
 });
 
+// 遞迴刪除留言及其所有回覆
+async function deleteCommentAndReplies(commentId) {
+  // 找到所有直接回覆這個留言的留言
+  const replies = await Comment.find({ parentComment: commentId });
+
+  // 遞迴刪除每個回覆的回覆
+  for (const reply of replies) {
+    await deleteCommentAndReplies(reply._id);
+  }
+
+  // 刪除這個留言本身
+  await Comment.findByIdAndDelete(commentId);
+}
+
 // Delete comment
 router.delete('/:postId/comments/:commentId', requireAuth, async (req, res) => {
   try {
@@ -262,10 +276,8 @@ router.delete('/:postId/comments/:commentId', requireAuth, async (req, res) => {
       return res.status(403).json({ ok: false, error: '無權刪除此留言' });
     }
 
-    // 刪除此留言的所有回覆
-    await Comment.deleteMany({ parentComment: req.params.commentId });
-    // 刪除留言本身
-    await Comment.findByIdAndDelete(req.params.commentId);
+    // 遞迴刪除此留言及其所有回覆
+    await deleteCommentAndReplies(req.params.commentId);
 
     res.json({ ok: true, message: '留言已刪除!' });
   } catch (err) {
