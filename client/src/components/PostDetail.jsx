@@ -407,7 +407,7 @@ export default function PostDetail({ user }) {
                     >
                       ↩️ 回覆
                     </button>
-                    {String(user._id) === String(comment.author?._id) && (
+                    {String(user._id) === String(comment.author?._id || comment.author) && (
                       <button
                         onClick={() => handleEditComment(comment)}
                         style={{
@@ -421,7 +421,7 @@ export default function PostDetail({ user }) {
                         ✏️ 編輯
                       </button>
                     )}
-                    {(String(user._id) === String(comment.author?._id) || user.isAdmin) && (
+                    {(String(user._id) === String(comment.author?._id || comment.author) || user.isAdmin) && (
                       <button
                         onClick={() => handleDeleteComment(comment._id)}
                         style={{
