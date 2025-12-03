@@ -130,7 +130,8 @@ router.get('/:id/comments', async (req, res) => {
   try {
     const comments = await DiscussionComment.find({ discussion: req.params.id })
       .populate('author', 'username displayName')
-      .sort({ createdAt: -1 });
+      .populate('replyToUser', 'username displayName')
+      .sort({ createdAt: 1 }); // 由舊到新
     res.json({ ok: true, comments });
   } catch (err) {
     console.error(err);
@@ -141,7 +142,7 @@ router.get('/:id/comments', async (req, res) => {
 // Add comment to discussion
 router.post('/:id/comments', requireAuth, async (req, res) => {
   try {
-    const { content } = req.body;
+    const { content, parentCommentId, replyToUserId } = req.body;
     if (!content || !content.trim()) {
       return res.status(400).json({ ok: false, error: '留言內容不能為空' });
     }
@@ -151,13 +152,30 @@ router.post('/:id/comments', requireAuth, async (req, res) => {
       return res.status(404).json({ ok: false, error: '討論不存在' });
     }
 
-    const comment = await DiscussionComment.create({
+    const commentData = {
       content: content.trim(),
       author: req.session.userId,
       discussion: req.params.id
-    });
+    };
 
+    // 如果是回覆留言
+    if (parentCommentId) {
+      const parentComment = await DiscussionComment.findById(parentCommentId);
+      if (!parentComment) {
+        return res.status(404).json({ ok: false, error: '要回覆的留言不存在' });
+      }
+      commentData.parentComment = parentCommentId;
+    }
+
+    // 記錄回覆對象
+    if (replyToUserId) {
+      commentData.replyToUser = replyToUserId;
+    }
+
+    const comment = await DiscussionComment.create(commentData);
     await comment.populate('author', 'username displayName');
+    await comment.populate('replyToUser', 'username displayName');
+
     res.json({ ok: true, comment, message: '留言成功!' });
   } catch (err) {
     console.error(err);
@@ -210,7 +228,11 @@ router.delete('/:discId/comments/:commentId', requireAuth, async (req, res) => {
       return res.status(403).json({ ok: false, error: '無權刪除此留言' });
     }
 
+    // 刪除此留言的所有回覆
+    await DiscussionComment.deleteMany({ parentComment: req.params.commentId });
+    // 刪除留言本身
     await DiscussionComment.findByIdAndDelete(req.params.commentId);
+
     res.json({ ok: true, message: '留言已刪除!' });
   } catch (err) {
     console.error(err);

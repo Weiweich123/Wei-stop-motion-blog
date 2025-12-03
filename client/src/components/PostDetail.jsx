@@ -37,6 +37,7 @@ export default function PostDetail({ user }) {
   const [error, setError] = useState(false)
   const [editingCommentId, setEditingCommentId] = useState(null)
   const [editingContent, setEditingContent] = useState('')
+  const [replyingTo, setReplyingTo] = useState(null) // { commentId, userId, userName }
 
   const loadPost = async () => {
     const res = await fetchJSON(`/api/posts/${id}`)
@@ -102,19 +103,40 @@ export default function PostDetail({ user }) {
       return
     }
 
+    const body = { content: commentContent }
+    if (replyingTo) {
+      body.parentCommentId = replyingTo.commentId
+      body.replyToUserId = replyingTo.userId
+    }
+
     const res = await fetchJSON(`/api/posts/${id}/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: commentContent })
+      body: JSON.stringify(body)
     })
 
     if (res.ok) {
       showToast(res.message || '留言成功！')
       setCommentContent('')
+      setReplyingTo(null)
       loadComments()
     } else {
       showToast(res.error || '留言失敗', 'error')
     }
+  }
+
+  const handleReply = (comment) => {
+    setReplyingTo({
+      commentId: comment._id,
+      userId: comment.author._id,
+      userName: comment.author.displayName || comment.author.username
+    })
+    // 滾動到留言輸入框
+    document.querySelector('textarea[placeholder*="留言"]')?.focus()
+  }
+
+  const cancelReply = () => {
+    setReplyingTo(null)
   }
 
   const handleDelete = async () => {
@@ -284,14 +306,42 @@ export default function PostDetail({ user }) {
 
       {user ? (
         <form onSubmit={submitComment} className="card" style={{ marginBottom: 24 }}>
+          {replyingTo && (
+            <div style={{
+              background: 'var(--soft-beige)',
+              padding: '8px 12px',
+              borderRadius: 8,
+              marginBottom: 12,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <span style={{ fontSize: '0.9rem' }}>
+                ↩️ 回覆 <strong style={{ color: 'var(--lego-blue)' }}>{replyingTo.userName}</strong>
+              </span>
+              <button
+                type="button"
+                onClick={cancelReply}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  color: 'var(--text-muted)'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
           <textarea
-            placeholder="寫下你的留言..."
+            placeholder={replyingTo ? `回覆 ${replyingTo.userName}...` : "寫下你的留言..."}
             rows={3}
             value={commentContent}
             onChange={e => setCommentContent(e.target.value)}
             style={{ marginBottom: 8 }}
           />
-          <button className="btn">送出留言</button>
+          <button className="btn">{replyingTo ? '送出回覆' : '送出留言'}</button>
         </form>
       ) : (
         <div className="card" style={{ marginBottom: 24 }}>
@@ -308,10 +358,23 @@ export default function PostDetail({ user }) {
           </div>
         ) : (
           comments.map(comment => (
-            <div key={comment._id} className="card" style={{ marginBottom: 12 }}>
+            <div
+              key={comment._id}
+              className="card"
+              style={{
+                marginBottom: 12,
+                marginLeft: comment.parentComment ? 32 : 0,
+                borderLeft: comment.parentComment ? '3px solid var(--lego-blue)' : 'none'
+              }}
+            >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                 <div>
                   <strong style={{ color: '#2563eb' }}>{comment.author?.displayName || comment.author?.username}</strong>
+                  {comment.replyToUser && (
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginLeft: 6 }}>
+                      ↩️ 回覆 <span style={{ color: 'var(--lego-blue)' }}>{comment.replyToUser.displayName || comment.replyToUser.username}</span>
+                    </span>
+                  )}
                   <span className="muted" style={{ marginLeft: 12, fontSize: '0.85rem' }}>
                     {new Date(comment.createdAt).toLocaleString()}
                   </span>
@@ -323,6 +386,18 @@ export default function PostDetail({ user }) {
                 </div>
                 {user && editingCommentId !== comment._id && (
                   <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={() => handleReply(comment)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '0.85rem',
+                        color: 'var(--lego-green)'
+                      }}
+                    >
+                      ↩️ 回覆
+                    </button>
                     {String(user._id) === String(comment.author?._id) && (
                       <button
                         onClick={() => handleEditComment(comment)}
