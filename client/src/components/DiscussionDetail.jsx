@@ -105,7 +105,8 @@ export default function DiscussionDetail({ user }) {
     setReplyingTo({
       commentId: comment._id,
       userId: comment.author._id,
-      userName: comment.author.displayName || comment.author.username
+      userName: comment.author.displayName || comment.author.username,
+      contentPreview: comment.content.slice(0, 50) + (comment.content.length > 50 ? '...' : '')
     })
     document.querySelector('textarea[placeholder*="留言"]')?.focus()
   }
@@ -283,26 +284,34 @@ export default function DiscussionDetail({ user }) {
               padding: '8px 12px',
               borderRadius: 8,
               marginBottom: 12,
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
             }}>
-              <span style={{ fontSize: '0.9rem' }}>
-                ↩️ 回覆 <strong style={{ color: 'var(--lego-blue)' }}>{replyingTo.userName}</strong>
-              </span>
-              <button
-                type="button"
-                onClick={cancelReply}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontSize: '1rem',
-                  color: 'var(--text-muted)'
-                }}
-              >
-                ✕
-              </button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                <span style={{ fontSize: '0.9rem' }}>
+                  ↩️ 回覆 <strong style={{ color: 'var(--lego-blue)' }}>{replyingTo.userName}</strong>
+                </span>
+                <button
+                  type="button"
+                  onClick={cancelReply}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '1rem',
+                    color: 'var(--text-muted)'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <div style={{
+                fontSize: '0.85rem',
+                color: 'var(--text-muted)',
+                fontStyle: 'italic',
+                borderLeft: '2px solid var(--lego-blue)',
+                paddingLeft: 8
+              }}>
+                「{replyingTo.contentPreview}」
+              </div>
             </div>
           )}
           <textarea
@@ -419,7 +428,25 @@ export default function DiscussionDetail({ user }) {
                   </div>
                 </div>
               ) : (
-                <p style={{ margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{linkifyContent(comment.content)}</p>
+                <>
+                  {comment.parentComment && comment.parentComment.content && (
+                    <div style={{
+                      background: 'var(--soft-beige)',
+                      padding: '8px 12px',
+                      borderRadius: 6,
+                      marginBottom: 8,
+                      fontSize: '0.85rem',
+                      color: 'var(--text-muted)',
+                      borderLeft: '2px solid var(--medium-gray)'
+                    }}>
+                      <span style={{ fontWeight: 500 }}>
+                        {comment.parentComment.author?.displayName || comment.parentComment.author?.username}：
+                      </span>
+                      「{comment.parentComment.content.slice(0, 60)}{comment.parentComment.content.length > 60 ? '...' : ''}」
+                    </div>
+                  )}
+                  <p style={{ margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{linkifyContent(comment.content)}</p>
+                </>
               )}
             </div>
           ))

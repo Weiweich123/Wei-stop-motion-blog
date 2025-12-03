@@ -108,6 +108,11 @@ router.get('/:id/comments', async (req, res) => {
     const comments = await Comment.find({ post: req.params.id })
       .populate('author', 'username displayName')
       .populate('replyToUser', 'username displayName')
+      .populate({
+        path: 'parentComment',
+        select: 'content author',
+        populate: { path: 'author', select: 'username displayName' }
+      })
       .sort({ createdAt: 1 }); // 改為由舊到新，方便顯示對話脈絡
     res.json({ ok: true, comments });
   } catch (err) {
